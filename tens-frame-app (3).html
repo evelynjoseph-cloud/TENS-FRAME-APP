@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tens Frame Fun!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #4FC3F7;
+    --sun: #FFD54F;
+    --grass: #81C784;
+    --coral: #FF8A65;
+    --purple: #BA68C8;
+    --navy: #1A1F3A;
+    --white: #FFFDF7;
+    --dot-color: #5C6BC0;
+    --dot-glow: #9FA8DA;
+    --empty-color: #E8F4FD;
+    --empty-border: #B0D4F1;
+    --highlight: #FFD54F;
+    --green-dot: #66BB6A;
+    --red: #EF5350;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(160deg, #1A1F3A 0%, #2D3561 50%, #1A1F3A 100%);
+    min-height: 100vh;
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(2px 2px at 70% 25%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(2px 2px at 60% 88%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 55%, rgba(255,255,255,0.8) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    animation: floatIn 0.6s ease-out;
+  }
+  @keyframes floatIn {
+    from { opacity:0; transform: translateY(-20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(28px, 6vw, 48px);
+    color: var(--sun);
+    text-shadow: 0 4px 20px rgba(255,213,79,0.4);
+    letter-spacing: 1px;
+  }
+  .header p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+  }
+
+  /* Nav tabs */
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .nav-btn {
+    padding: 10px 6px;
+    border: none;
+    border-radius: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1.3;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .nav-btn .nav-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .nav-btn.active {
+    background: var(--sun);
+    color: var(--navy);
+    border-color: var(--sun);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,213,79,0.35);
+  }
+  .nav-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.14);
+    transform: translateY(-1px);
+  }
+
+  /* Panel */
+  .panel {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    padding: 28px 24px;
+    animation: panelIn 0.35s ease-out;
+    backdrop-filter: blur(10px);
+  }
+  @keyframes panelIn {
+    from { opacity:0; transform: scale(0.97); }
+    to   { opacity:1; transform: scale(1); }
+  }
+  .panel.hidden { display: none; }
+
+  .panel-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--sun);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .panel-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    text-align: center;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  /* Tens Frame */
+  .frame-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
+  .tens-frame {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 2.5px solid rgba(255,255,255,0.2);
+    border-radius: 18px;
+    padding: 14px;
+    width: fit-content;
+  }
+  .cell {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    border: 2.5px solid var(--empty-border);
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .cell.filled {
+    background: var(--dot-color);
+    border-color: var(--dot-glow);
+    box-shadow: 0 4px 14px rgba(92,107,192,0.5);
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.4); opacity:0; }
+    to   { transform: scale(1); opacity:1; }
+  }
+  .cell.empty-glow {
+    background: rgba(255,213,79,0.12);
+    border-color: var(--sun);
+    animation: glow 1.2s ease-in-out infinite;
+  }
+  @keyframes glow {
+    0%,100%{ box-shadow: 0 0 6px rgba(255,213,79,0.3); }
+    50%     { box-shadow: 0 0 18px rgba(255,213,79,0.7); }
+  }
+  .cell.new-dot {
+    background: var(--green-dot);
+    border-color: #A5D6A7;
+    box-shadow: 0 4px 14px rgba(102,187,106,0.55);
+    animation: newPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes newPop {
+    0%   { transform: scale(0) rotate(-20deg); opacity:0; }
+    60%  { transform: scale(1.2) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); opacity:1; }
+  }
+
+  /* Info chips */
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
+  .chip {
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+    border: 2px solid transparent;
+  }
+  .chip-blue  { background: rgba(92,107,192,0.25); border-color: rgba(159,168,218,0.4); }
+  .chip-gold  { background: rgba(255,213,79,0.2); border-color: rgba(255,213,79,0.4); color: var(--sun); }
+  .chip-green { background: rgba(102,187,106,0.2); border-color: rgba(165,214,167,0.4); color: #A5D6A7; }
+  .chip-red   { background: rgba(239,83,80,0.2); border-color: rgba(239,83,80,0.4); color: #EF9A9A; }
+  .chip-val   { font-family: 'Fredoka One', cursive; font-size: 22px; line-height: 1; }
+
+  /* Say box */
+  .say-box {
+    background: rgba(255,255,255,0.07);
+    border-left: 4px solid var(--sun);
+    border-radius: 0 16px 16px 0;
+    padding: 14px 18px;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    color: rgba(255,255,255,0.9);
+  }
+  .say-box .hl { color: var(--sun); font-weight: 900; }
+  .say-box .hl-green { color: #A5D6A7; font-weight: 900; }
+
+  /* Controls */
+  .controls { display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 20px; }
+  .ctrl-btn {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+    color: white; font-size: 22px; cursor: pointer; font-weight: 700;
+    transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+  }
+  .ctrl-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+  .ctrl-btn:active { transform: scale(0.95); }
+  .big-num {
+    font-family: 'Fredoka One', cursive;
+    font-size: 52px;
+    color: var(--sun);
+    min-width: 60px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(255,213,79,0.5);
+    line-height: 1;
+  }
+
+  /* Quiz options */
+  .quiz-q {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 14px;
+  }
+  .opts { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
+  .opt-btn {
+    width: 68px; height: 68px;
+    border-radius: 18px;
+    border: 3px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .opt-btn:hover:not(:disabled) { transform: scale(1.12); background: rgba(255,255,255,0.16); border-color: var(--sun); color: var(--sun); }
+  .opt-btn.correct { background: rgba(102,187,106,0.35); border-color: #A5D6A7; color: #A5D6A7; transform: scale(1.1); }
+  .opt-btn.wrong   { background: rgba(239,83,80,0.25); border-color: #EF9A9A; color: #EF9A9A; }
+  .opt-btn:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    min-height: 30px;
+    margin-bottom: 14px;
+    transition: all 0.3s;
+  }
+  .feedback.good { color: #A5D6A7; }
+  .feedback.bad  { color: #EF9A9A; }
+
+  /* Score */
+  .score-row { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 18px; }
+  .score-dot { width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.3s; }
+  .score-dot.win  { background: #66BB6A; box-shadow: 0 0 8px rgba(102,187,106,0.6); }
+  .score-dot.lose { background: #EF5350; }
+  .score-label { font-size: 13px; color: rgba(255,255,255,0.5); margin-left: 6px; }
+
+  /* Next button */
+  .next-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 14px 36px;
+    background: var(--sun);
+    color: var(--navy);
+    border: none;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(255,213,79,0.35);
+  }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,213,79,0.45); }
+  .next-btn:active { transform: scale(0.97); }
+
+  /* One-more side-by-side */
+  .one-more-layout {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .one-frame-wrap { text-align: center; }
+  .one-frame-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .frame-sm {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 10px;
+    width: fit-content;
+  }
+  .cell-sm {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 2px solid rgba(176,212,241,0.4);
+    background: rgba(255,255,255,0.04);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .cell-sm.filled { background: var(--dot-color); border-color: var(--dot-glow); }
+  .cell-sm.new-dot { background: var(--green-dot); border-color: #A5D6A7; animation: newPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .plus-arrow {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    color: var(--sun);
+    text-align: center;
+  }
+
+  /* Subitize fill-in layout */
+  .fill-row {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; align-items: flex-end;
+  }
+  .fill-box {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .fill-label {
+    font-size: 12px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+    color: rgba(255,255,255,0.55); text-align: center; line-height: 1.3;
+  }
+  .fill-label span { display: block; font-size: 18px; }
+  .fill-input {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    border: 3px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.07);
+    color: var(--sun);
+    font-family: 'Fredoka One', cursive;
+    font-size: 30px;
+    text-align: center;
+    outline: none;
+    transition: all 0.2s;
+    -moz-appearance: textfield;
+  }
+  .fill-input::-webkit-outer-spin-button,
+  .fill-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .fill-input:focus { border-color: var(--sun); background: rgba(255,213,79,0.1); box-shadow: 0 0 0 3px rgba(255,213,79,0.2); }
+  .fill-input.correct-inp { border-color: #66BB6A; background: rgba(102,187,106,0.2); color: #A5D6A7; }
+  .fill-input.wrong-inp  { border-color: #EF5350; background: rgba(239,83,80,0.18); color: #EF9A9A; animation: shake 0.35s ease; }
+  @keyframes shake {
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-6px); }
+    75%{ transform:translateX(6px); }
+  }
+  .fill-plus { font-family:'Fredoka One',cursive; font-size:26px; color:rgba(255,255,255,0.35); padding-bottom:10px; }
+  .check-btn {
+    display: block; margin: 0 auto 14px;
+    padding: 12px 32px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .check-btn:hover { background: rgba(255,255,255,0.18); border-color: var(--sun); color: var(--sun); }
+
+  /* Celebration */
+  .celebrate {
+    position: fixed; top:0; left:0; right:0; bottom:0;
+    pointer-events: none; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .celebrate.show { opacity: 1; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 1.5s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-100px) rotate(0deg); opacity:1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity:0; }
+  }
+  .celebrate-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: 64px;
+    text-shadow: 0 0 40px rgba(255,213,79,0.8);
+    color: var(--sun);
+    animation: bigBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; z-index: 2;
+  }
+  @keyframes bigBounce {
+    from { transform: scale(0); opacity:0; }
+    to   { transform: scale(1); opacity:1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🔢 Tens Frame Fun!</h1>
+    <p>Math adventures for kindergarten superstars ⭐</p>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab(0)">
+      <span class="nav-icon">👀</span>Quick Look!
+    </button>
+    <button class="nav-btn" onclick="showTab(1)">
+      <span class="nav-icon">📏</span>Away from 10
+    </button>
+    <button class="nav-btn" onclick="showTab(2)">
+      <span class="nav-icon">➕</span>One More
+    </button>
+    <button class="nav-btn" onclick="showTab(3)">
+      <span class="nav-icon">🔜</span>What's Next?
+    </button>
+  </div>
+
+  <!-- PANEL 0: Subitize -->
+  <div class="panel" id="panel0">
+    <div class="panel-title">👀 Quick Look!</div>
+    <div class="panel-desc">
+      <span id="sub-step-indicator" style="display:inline-block;background:rgba(255,213,79,0.18);border-radius:50px;padding:3px 14px;font-size:12px;font-weight:800;color:#FFD54F;margin-bottom:8px;letter-spacing:0.06em;">STEP 1 OF 2</span><br>
+      Fill in the boxes — top row dots and extras below.
+    </div>
+    <div class="frame-wrap"><div class="tens-frame" id="sub-frame"></div></div>
+
+    <!-- Step 1: fill-in boxes -->
+    <div id="step1-area">
+      <div class="fill-row">
+        <div class="fill-box">
+          <div class="fill-label"><span>🔵</span>Top row<br>dots</div>
+          <input class="fill-input" id="inp-top" type="number" min="0" max="5" placeholder="?" />
+        </div>
+        <div class="fill-plus">+</div>
+        <div class="fill-box">
+          <div class="fill-label"><span>🔵</span>Extras<br>below</div>
+          <input class="fill-input" id="inp-ext" type="number" min="0" max="5" placeholder="?" />
+        </div>
+
+      </div>
+      <button class="check-btn" onclick="checkSub()">Check My Answer ✔</button>
+      <div class="feedback" id="sub-feedback"></div>
+    </div>
+
+    <!-- Step 2: total dots -->
+    <div id="step2-area" style="display:none; border-top:1.5px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:20px;">
+      <div style="text-align:center;margin-bottom:6px;">
+        <span style="display:inline-block;background:rgba(102,187,106,0.2);border-radius:50px;padding:3px 14px;font-size:12px;font-weight:800;color:#A5D6A7;letter-spacing:0.06em;">STEP 2 OF 2</span>
+      </div>
+      <div class="quiz-q" style="margin-bottom:14px;">How many dots in total? 🔵</div>
+      <div class="opts" id="sub-total-opts"></div>
+      <div class="feedback" id="sub-total-feedback"></div>
+    </div>
+
+    <div class="score-row" id="sub-score-row"></div>
+    <button class="next-btn" id="sub-next-btn" onclick="nextSub()" style="display:none; margin-top:4px;">Next Question ›</button>
+  </div>
+
+  <!-- PANEL 1: Away from 10 -->
+  <div class="panel hidden" id="panel1">
+    <div class="panel-title">📏 Away from 10</div>
+    <div class="panel-desc">Look at the glowing empty spots! 👀<br>How many empty boxes do you see?</div>
+    <div class="controls">
+      <button class="ctrl-btn" onclick="changeAway(-1)">−</button>
+      <div class="big-num" id="away-num">7</div>
+      <button class="ctrl-btn" onclick="changeAway(1)">+</button>
+    </div>
+    <div class="frame-wrap"><div class="tens-frame" id="away-frame"></div></div>
+    <div class="chips">
+      <div class="chip chip-blue">🔵 Dots: <span class="chip-val" id="away-filled">7</span></div>
+    </div>
+    <div style="text-align:center; margin-bottom:16px;">
+      <div class="fill-label" style="margin-bottom:10px;"><span>⬜</span>How many empty spots can you count?</div>
+      <input class="fill-input" id="away-inp" type="number" min="0" max="9" placeholder="?" style="width:80px;height:80px;font-size:36px;" />
+    </div>
+    <button class="check-btn" onclick="checkAway()">Check! ✔</button>
+    <div class="feedback" id="away-feedback"></div>
+    <div class="say-box" id="away-say" style="display:none"></div>
+  </div>
+
+  <!-- PANEL 2: One More -->
+  <div class="panel hidden" id="panel2">
+    <div class="panel-title">➕ One More!</div>
+    <div class="panel-desc">Look at the frames! We added one green dot 🟢<br>Now count ALL the dots — how many are there?</div>
+    <div class="controls">
+      <button class="ctrl-btn" onclick="changeOne(-1)">−</button>
+      <div class="big-num" id="one-num">6</div>
+      <button class="ctrl-btn" onclick="changeOne(1)">+</button>
+    </div>
+    <div class="one-more-layout">
+      <div class="one-frame-wrap">
+        <div class="one-frame-label">Start</div>
+        <div class="frame-sm" id="one-before"></div>
+      </div>
+      <div class="plus-arrow">+ 🟢<br><span style="font-size:18px;color:rgba(255,255,255,0.5)">one more</span></div>
+      <div class="one-frame-wrap">
+        <div class="one-frame-label">Count them all!</div>
+        <div class="frame-sm" id="one-after"></div>
+      </div>
+    </div>
+    <div class="chips">
+      <div class="chip chip-blue">Started with <span class="chip-val" id="one-start">6</span></div>
+    </div>
+    <div class="quiz-q" style="margin-bottom:12px;">How many dots now? Pick the right number! 👇</div>
+    <div class="opts" id="one-opts"></div>
+    <div class="feedback" id="one-feedback"></div>
+    <div class="say-box" id="one-say" style="display:none"></div>
+  </div>
+
+  <!-- PANEL 3: What comes after -->
+  <div class="panel hidden" id="panel3">
+    <div class="panel-title">🔜 What Comes After?</div>
+    <div class="panel-desc">Look at the dots on the frame and pick the number that comes <em>just after!</em></div>
+    <div class="frame-wrap"><div class="tens-frame" id="aft-frame"></div></div>
+    <div class="chips">
+      <div class="chip chip-blue">This frame shows: <span class="chip-val" id="aft-shown">—</span></div>
+    </div>
+    <div class="quiz-q" id="aft-q">What number comes after? ➡️</div>
+    <div class="opts" id="aft-opts"></div>
+    <div class="feedback" id="aft-feedback"></div>
+    <div class="score-row" id="aft-score-row"></div>
+    <button class="next-btn" onclick="nextAft()">Next Question ›</button>
+  </div>
+</div>
+
+<!-- Celebration overlay -->
+<div class="celebrate" id="celebrate">
+  <div class="celebrate-text" id="celebrate-text">⭐</div>
+</div>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────
+function renderFrame(id, n, emptyGlow=[], newDotAt=-1) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    if (i < n) {
+      if (i === newDotAt) { c.classList.add('new-dot'); c.textContent = '●'; }
+      else { c.classList.add('filled'); c.textContent = '●'; }
+    } else if (emptyGlow.includes(i)) {
+      c.classList.add('empty-glow');
+    }
+    el.appendChild(c);
+  }
+}
+
+function renderSmallFrame(id, n, newDotAt=-1) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell-sm';
+    if (i < n) {
+      if (i === newDotAt) { c.classList.add('new-dot'); c.textContent='●'; }
+      else { c.classList.add('filled'); c.textContent='●'; }
+    }
+    el.appendChild(c);
+  }
+}
+
+function randOpts(correct, lo, hi, count=4) {
+  const s = new Set([correct]);
+  let tries = 0;
+  while (s.size < count && tries < 100) {
+    s.add(Math.floor(Math.random()*(hi-lo+1))+lo);
+    tries++;
+  }
+  return [...s].sort(() => Math.random()-0.5);
+}
+
+function renderScore(rowId, right, wrong, total=6) {
+  const el = document.getElementById(rowId);
+  el.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'score-dot' + (i<right?' win':(i<right+wrong?' lose':''));
+    el.appendChild(d);
+  }
+  const lbl = document.createElement('span');
+  lbl.className = 'score-label';
+  lbl.textContent = `${right} ⭐  ${wrong} ✗`;
+  el.appendChild(lbl);
+}
+
+function showTab(i) {
+  [0,1,2,3].forEach(j => {
+    document.getElementById('panel'+j).classList.toggle('hidden', j!==i);
+    document.querySelectorAll('.nav-btn')[j].classList.toggle('active', j===i);
+  });
+  playSound('bg');
+}
+
+// ── Sounds ───────────────────────────────────────────────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function getCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+
+function playSound(type) {
+  try {
+    const ctx = getCtx();
+    if (type === 'correct') {
+      // happy ascending chime
+      [[523,0],[659,0.12],[784,0.24],[1047,0.36]].forEach(([freq,delay]) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'sine'; o.frequency.value = freq;
+        const t = ctx.currentTime + delay;
+        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.25,t+0.04);
+        g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+        o.start(t); o.stop(t+0.35);
+      });
+    } else if (type === 'wrong') {
+      // low wobble
+      [[220,0],[196,0.15]].forEach(([freq,delay]) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'sawtooth'; o.frequency.value = freq;
+        const t = ctx.currentTime + delay;
+        g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+        o.start(t); o.stop(t+0.3);
+      });
+    } else if (type === 'bg') {
+      // gentle background ping on tab switch
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = 440;
+      g.gain.setValueAtTime(0.08, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.4);
+      o.start(); o.stop(ctx.currentTime+0.4);
+    }
+  } catch(e) {}
+}
+
+// ── Kid-friendly messages ────────────────────────────────────────────────
+const CORRECT_MSGS = [
+  '🌟 WOW! You are SO smart!',
+  '⭐ YES! Super job!',
+  '🎉 HOORAY! You did it!',
+  '🏆 Amazing! You rock!',
+  '🌈 Brilliant! Great work!',
+  '🎊 Woohoo! You are a star!',
+];
+const WRONG_MSGS = [
+  "🤔 Oops! Try again!",
+  "💪 Good try! You will get it!",
+  "🙂 Almost! Keep going!",
+  "🌟 Do not give up, you have got this!",
+];
+function pickMsg(type) {
+  const arr = type === 'correct' ? CORRECT_MSGS : WRONG_MSGS;
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function celebrate(msg) {
+  const el = document.getElementById('celebrate');
+  const txt = document.getElementById('celebrate-text');
+  txt.textContent = msg;
+  el.classList.add('show');
+  const colors = ['#FFD54F','#81C784','#4FC3F7','#FF8A65','#BA68C8','#EF5350'];
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100+'vw';
+    p.style.top = '-20px';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDelay = Math.random()*0.8+'s';
+    p.style.width = (8+Math.random()*10)+'px';
+    p.style.height = (8+Math.random()*10)+'px';
+    el.appendChild(p);
+  }
+  setTimeout(() => {
+    el.classList.remove('show');
+    el.querySelectorAll('.confetti-piece').forEach(p=>p.remove());
+  }, 2200);
+}
+
+// ── Tab 0: Subitize (fill-in) ────────────────────────────────────────────
+let subRight=0, subWrong=0, subQ=0, subChecked=false;
+function nextSub() {
+  subQ = Math.floor(Math.random()*9)+1;
+  subChecked = false;
+  renderFrame('sub-frame', subQ);
+  ['inp-top','inp-ext'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = '';
+    el.className = 'fill-input';
+    el.disabled = false;
+  });
+  document.getElementById('sub-feedback').textContent = '';
+  document.getElementById('sub-feedback').className = 'feedback';
+  document.getElementById('sub-next-btn').style.display = 'none';
+  document.getElementById('step1-area').style.display = 'block';
+  document.getElementById('step2-area').style.display = 'none';
+  document.getElementById('sub-total-opts').innerHTML = '';
+  document.getElementById('sub-total-feedback').textContent = '';
+  document.getElementById('sub-step-indicator').textContent = 'STEP 1 OF 2';
+  totalAnswered = false;
+  renderScore('sub-score-row', subRight, subWrong);
+  document.getElementById('inp-top').focus();
+}
+
+function checkSub() {
+  if (subChecked) return;
+  const topVal = parseInt(document.getElementById('inp-top').value);
+  const extVal = parseInt(document.getElementById('inp-ext').value);
+  const correctTop = Math.min(subQ, 5);
+  const correctExt = Math.max(0, subQ - 5);
+
+  const okTop = topVal === correctTop;
+  const okExt = extVal === correctExt;
+  const allOk = okTop && okExt;
+
+  document.getElementById('inp-top').classList.add(okTop ? 'correct-inp' : 'wrong-inp');
+  document.getElementById('inp-ext').classList.add(okExt ? 'correct-inp' : 'wrong-inp');
+  ['inp-top','inp-ext'].forEach(id => document.getElementById(id).disabled = true);
+  subChecked = true;
+
+  const fb = document.getElementById('sub-feedback');
+  if (allOk) {
+    playSound('correct'); celebrate(pickMsg('correct'));
+    fb.textContent = pickMsg('correct') + ` Top row: ${correctTop}, extras: ${correctExt}!`;
+    fb.className = 'feedback good';
+  } else {
+    playSound('wrong'); fb.innerHTML = pickMsg('wrong') + ` Top row: <b>${correctTop}</b>, extras: <b>${correctExt}</b>`;
+    fb.className = 'feedback bad';
+  }
+
+  // Reveal total-dots question
+  totalAnswered = false;
+  const sec = document.getElementById('step2-area');
+  sec.style.display = 'block';
+  document.getElementById('sub-total-feedback').textContent = '';
+  document.getElementById('sub-total-feedback').className = 'feedback';
+  const lo = Math.max(1, subQ - 3), hi = Math.min(10, subQ + 3);
+  const opts = randOpts(subQ, lo, hi);
+  const container = document.getElementById('sub-total-opts');
+  container.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn'; b.textContent = o;
+    b.onclick = () => answerTotal(b, o);
+    container.appendChild(b);
+  });
+}
+
+let totalAnswered = false;
+function answerTotal(btn, val) {
+  if (totalAnswered) return; totalAnswered = true;
+  const ok = val === subQ;
+  btn.classList.add(ok ? 'correct' : 'wrong');
+  document.querySelectorAll('#sub-total-opts .opt-btn').forEach(b => {
+    b.disabled = true;
+    if (+b.textContent === subQ) b.classList.add('correct');
+  });
+  const fb = document.getElementById('sub-total-feedback');
+  if (ok) {
+    subRight++; playSound('correct'); celebrate(pickMsg('correct'));
+    fb.textContent = pickMsg('correct') + ` There are ${subQ} dots!`; fb.className = 'feedback good';
+  } else {
+    subWrong++; playSound('wrong');
+    fb.textContent = pickMsg('wrong') + ` There are ${subQ} dots! 💪`; fb.className = 'feedback bad';
+  }
+  renderScore('sub-score-row', subRight, subWrong);
+  document.getElementById('sub-next-btn').style.display = 'block';
+}
+
+// ── Tab 1: Away from 10 ──────────────────────────────────────────────────
+let awayN = 7, awayAnswered = false;
+function renderAway() {
+  const empties = Array.from({length:10-awayN},(_,i)=>awayN+i);
+  renderFrame('away-frame', awayN, empties);
+  document.getElementById('away-num').textContent = awayN;
+  document.getElementById('away-filled').textContent = awayN;
+  const inp = document.getElementById('away-inp');
+  inp.value = ''; inp.className = 'fill-input'; inp.disabled = false;
+  document.getElementById('away-feedback').textContent = '';
+  document.getElementById('away-feedback').className = 'feedback';
+  document.getElementById('away-say').style.display = 'none';
+  awayAnswered = false;
+}
+function changeAway(d) { awayN=Math.max(1,Math.min(9,awayN+d)); renderAway(); }
+function checkAway() {
+  if (awayAnswered) return;
+  const val = parseInt(document.getElementById('away-inp').value);
+  const correct = 10 - awayN;
+  const ok = val === correct;
+  awayAnswered = true;
+  const inp = document.getElementById('away-inp');
+  inp.classList.add(ok ? 'correct-inp' : 'wrong-inp');
+  inp.disabled = true;
+  const fb = document.getElementById('away-feedback');
+  if (ok) {
+    playSound('correct');
+    celebrate(pickMsg('correct'));
+    fb.textContent = pickMsg('correct') + ` There are ${correct} empty spots! So ${awayN} is ${correct} away from 10! 🎉`;
+    fb.className = 'feedback good';
+  } else {
+    playSound('wrong');
+    fb.textContent = pickMsg('wrong') + ` The answer is ${correct}! ${awayN} is ${correct} away from 10! 💪`;
+    fb.className = 'feedback bad';
+  }
+  const say = document.getElementById('away-say');
+  say.style.display = 'block';
+  say.innerHTML = `I see <span class="hl">${awayN}</span> blue dots and <span class="hl">${correct}</span> glowing empty spots.<br>So <span class="hl">${awayN}</span> is <span class="hl">${correct} away from 10</span>! 🎉`;
+}
+renderAway();
+
+// ── Tab 2: One More ──────────────────────────────────────────────────────
+let oneN = 6, oneAnswered = false;
+function renderOne() {
+  oneAnswered = false;
+  document.getElementById('one-num').textContent = oneN;
+  document.getElementById('one-start').textContent = oneN;
+  renderSmallFrame('one-before', oneN);
+  renderSmallFrame('one-after', oneN+1, oneN);
+  document.getElementById('one-feedback').textContent = '';
+  document.getElementById('one-feedback').className = 'feedback';
+  document.getElementById('one-say').style.display = 'none';
+  // build answer options
+  const lo = Math.max(1, oneN-1), hi = Math.min(10, oneN+3);
+  const opts = randOpts(oneN+1, lo, hi);
+  const container = document.getElementById('one-opts');
+  container.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn'; b.textContent = o;
+    b.onclick = () => answerOne(b, o);
+    container.appendChild(b);
+  });
+}
+function changeOne(d) { oneN=Math.max(0,Math.min(9,oneN+d)); renderOne(); }
+function answerOne(btn, val) {
+  if (oneAnswered) return; oneAnswered = true;
+  const ok = val === oneN+1;
+  btn.classList.add(ok ? 'correct' : 'wrong');
+  document.querySelectorAll('#one-opts .opt-btn').forEach(b => {
+    b.disabled = true;
+    if (+b.textContent === oneN+1) b.classList.add('correct');
+  });
+  const fb = document.getElementById('one-feedback');
+  if (ok) {
+    playSound('correct');
+    celebrate(pickMsg('correct'));
+    fb.textContent = pickMsg('correct') + ` ${oneN} + 1 = ${oneN+1}! You got it! 🌟`;
+    fb.className = 'feedback good';
+  } else {
+    playSound('wrong');
+    fb.textContent = pickMsg('wrong') + ` ${oneN} + 1 = ${oneN+1}! Try the next one! 💪`;
+    fb.className = 'feedback bad';
+  }
+  const say = document.getElementById('one-say');
+  say.style.display = 'block';
+  say.innerHTML = `I showed <span class="hl">${oneN}</span> on the frame.<br>I added <span class="hl-green">one more</span> green dot 🟢<br>Now I have <span class="hl">${oneN+1}</span>! <span class="hl">${oneN} + 1 = ${oneN+1}</span>`;
+}
+renderOne();
+
+// ── Tab 3: What Comes After ──────────────────────────────────────────────
+let aftRight=0, aftWrong=0, aftQ=0, aftAnswered=false;
+function nextAft() {
+  aftQ = Math.floor(Math.random()*8)+1;
+  aftAnswered = false;
+  renderFrame('aft-frame', aftQ);
+  document.getElementById('aft-shown').textContent = aftQ;
+  document.getElementById('aft-feedback').textContent = '';
+  document.getElementById('aft-feedback').className = 'feedback';
+  const lo = Math.max(2, aftQ-1), hi = Math.min(10, aftQ+3);
+  const opts = randOpts(aftQ+1, lo, hi);
+  const container = document.getElementById('aft-opts');
+  container.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn'; b.textContent = o;
+    b.onclick = () => answerAft(b, o);
+    container.appendChild(b);
+  });
+  renderScore('aft-score-row', aftRight, aftWrong);
+}
+
+function answerAft(btn, val) {
+  if (aftAnswered) return; aftAnswered = true;
+  const ok = val === aftQ+1;
+  btn.classList.add(ok ? 'correct' : 'wrong');
+  document.querySelectorAll('#aft-opts .opt-btn').forEach(b => b.disabled = true);
+  if (!ok) {
+    document.querySelectorAll('#aft-opts .opt-btn').forEach(b => {
+      if (+b.textContent === aftQ+1) b.classList.add('correct');
+    });
+  }
+  const fb = document.getElementById('aft-feedback');
+  if (ok) { aftRight++; playSound('correct'); celebrate(pickMsg('correct')); fb.textContent = pickMsg('correct') + ` After ${aftQ} comes ${aftQ+1}!`; fb.className='feedback good'; }
+  else { aftWrong++; playSound('wrong'); fb.textContent = pickMsg('wrong') + ` After ${aftQ} comes ${aftQ+1}! 💪`; fb.className='feedback bad'; }
+  renderScore('aft-score-row', aftRight, aftWrong);
+}
+
+// Init
+nextSub();
+nextAft();
+</script>
+</body>
+</html>
